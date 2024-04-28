@@ -10,9 +10,15 @@
 - [ ] Download Images (Master & Node 1)
 - https://polteq-my.sharepoint.com/:f:/p/robin_feitsma/EjQOYpa70HhHghZp0bCaYXYB2ZjTEgU6yLdisHQMSVfrAQ?e=JZf5wu
 
-- [ ] Start virtualbox, Ga naar Tools en klik op import
+- [ ] Start virtualbox, Ga naar File en klik op import appliance
 
 - [ ] Selecteer en importeer beide gedownloaden images (gebruik standaard instellingen)
+
+- [ ] Ga naar File ->Tools -> en klik op Network manager
+
+- [ ] Klik op Host only Networks -> Create
+
+- [ ] Klik op Configure adaptor manually en zet ip= 192.168.56.1
 
 ## Install k3s
 
