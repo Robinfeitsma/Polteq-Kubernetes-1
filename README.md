@@ -20,6 +20,17 @@
 
 - [ ] Klik op Configure adaptor manually en zet ip= 192.168.56.1
 
+- [ ] Ga naar Master -> Settings -> Network
+- [ ] Controleer Adapter 1 = Bridged adapter
+- [ ] Stel in Adapter 2 = Hosts Only-Network
+- [ ] Stel in Adapter 2: Ga naar advanced, Promiscuous mode allow VMS
+
+- [ ] Ga naar Node -> Settings -> Network
+- [ ] Controleer Adapter 2 = Bridged adapter
+- [ ] Stel in Adapter 1 = Hosts Only-Network
+- [ ] Stel in Adapter 1: Ga naar advanced, Promiscuous mode allow VMS
+
+
 ## Install k3s
 
 - [ ] SSH naar master en install k3s met de volgende commando
