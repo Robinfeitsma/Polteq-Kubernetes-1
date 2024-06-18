@@ -9,178 +9,182 @@
    [Images Download Link](https://polteq-my.sharepoint.com/:f:/p/robin_feitsma/EjQOYpa70HhHghZp0bCaYXYB2ZjTEgU6yLdisHQMSVfrAQ?e=JZf5wu)
 
 3. **Start VirtualBox en importeer Images**:
-    - Ga naar `File` > `Import Appliance`
-    - Selecteer en importeer beide gedownloade images (gebruik standaard instellingen)
+   - Ga naar `File` > `Import Appliance`
+   - Selecteer en importeer beide gedownloade images (gebruik standaard instellingen)
 
 ### Setup VirtualBox Network
 
 4. **Configureer Netwerk**:
-    - Ga naar `File` > `Tools` > `Network Manager`
-    - Klik op `Host-only Networks` > `Create`
-    - Configureer adapter handmatig en zet IP op `192.168.56.1`
+   - Ga naar `File` > `Tools` > `Network Manager`
+   - Klik op `Host-only Networks` > `Create`
+   - Configureer adapter handmatig en zet IP op `192.168.56.1`
 
 ### Setup VirtualBox Network voor Master
 
 5. **Configureer netwerk voor Master**:
-    - Ga naar `Master` > `Settings` > `Network`
-    - Controleer of `Adapter 1` is ingesteld op `Bridged Adapter`
-    - Stel `Adapter 2` in op `Host-only Network`
-    - Ga naar `Advanced` bij `Adapter 2` en zet `Promiscuous Mode` op `Allow VMs`
+   - Ga naar `Master` > `Settings` > `Network`
+   - Controleer of `Adapter 1` is ingesteld op `Bridged Adapter`
+   - Stel `Adapter 2` in op `Host-only Network`
+   - Ga naar `Advanced` bij `Adapter 2` en zet `Promiscuous Mode` op `Allow VMs`
 
 ### Setup VirtualBox Network voor Node 1
 
 6. **Configureer netwerk voor Node 1**:
-    - Ga naar `Node` > `Settings` > `Network`
-    - Controleer of `Adapter 2` is ingesteld op `Bridged Adapter`
-    - Stel `Adapter 1` in op `Host-only Network`
-    - Ga naar `Advanced` bij `Adapter 1` en zet `Promiscuous Mode` op `Allow VMs`
+   - Ga naar `Node` > `Settings` > `Network`
+   - Controleer of `Adapter 2` is ingesteld op `Bridged Adapter`
+   - Stel `Adapter 1` in op `Host-only Network`
+   - Ga naar `Advanced` bij `Adapter 1` en zet `Promiscuous Mode` op `Allow VMs`
 
 ## Install k3s
 
 1. **SSH naar Master en installeer k3s**:
    ```sh
    curl -sfL https://get.k3s.io | sh -s - --node-taint CriticalAddonsOnly=true:NoExecute --disable-cloud-controller
-   
+   ```
+
 2. **Haal de master token op**:
    ```sh
    sudo cat /var/lib/rancher/k3s/server/node-token
+   ```
+    - Kopieer de master token (selecteer in PowerShell en klik rechts met de muis)
 
-3. **Kopieer de master token**:
-   -  Selecteer in powershell en klik rechts met muis
-
-4. **SSH naar node 1**:
+3. **SSH naar Node 1 en installeer k3s**:
    ```sh
    ssh user@192.168.56.4
+   curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.3:6443 K3S_TOKEN=<master-token> sh -
+   ```
 
-5. **install k3s met de volgende commando**:
-   ```sh
-   curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.3:6443 K3S_TOKEN=<mynodetoken> sh -
-
-6. **Ga terug naar de master node met commando**:
+4. **Ga terug naar de Master Node**:
    ```sh
    exit
+   ```
 
-7. **Controleer of alle nodes zijn toegevoegd**:
+5. **Controleer of alle nodes zijn toegevoegd**:
    ```sh
    sudo kubectl get nodes
+   ```
 
-8. **Zet de k3s configuratie in de environments**:
-- Zowel master als node
-
+6. **Zet de k3s configuratie in de environment (zowel Master als Node)**:
    ```sh
    sudo su
    echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
    exit
+   ```
 
 ## Installeer Helm
 
-````
-#Fix kubeconfig file
-export KUBECONFIG=~/.kube/config
-mkdir ~/.kube 2> /dev/null
-sudo k3s kubectl config view --raw > "$KUBECONFIG"
-chmod 600 "$KUBECONFIG"
-sudo su
-echo "KUBECONFIG=$KUBECONFIG" >> /etc/environment
-exit
-#Switch naar home
-cd..
-#Maak een directory voor helm
-mkdir helm
-#Switch naar helm directory
-cd helm
-#Download helm installer
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-#Verander rechten voor uitvoering van bestanden
-chmod 700 get_helm.sh
-#installeer helm
-./get_helm.sh
-#check of helm is geinstalleerd
-helm version
-````
+1. **Fix kubeconfig file**:
+   ```sh
+   export KUBECONFIG=~/.kube/config
+   mkdir ~/.kube 2> /dev/null
+   sudo k3s kubectl config view --raw > "$KUBECONFIG"
+   chmod 600 "$KUBECONFIG"
+   sudo su
+   echo "KUBECONFIG=$KUBECONFIG" >> /etc/environment
+   exit
+   ```
 
-## Installeer configureer MetalLB
+2. **Installeer Helm**:
+    - Ga naar home directory:
+      ```sh
+      cd
+      ```
+    - Maak een directory voor Helm:
+      ```sh
+      mkdir helm
+      cd helm
+      ```
+    - Download Helm installer:
+      ```sh
+      curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      chmod 700 get_helm.sh
+      ./get_helm.sh
+      ```
+    - Controleer Helm installatie:
+      ```sh
+      helm version
+      ```
 
-````
-# Voeg metallb repository toe aan helm
-helm repo add metallb https://metallb.github.io/metallb
-# Controleer of dat goed is gegaan
-helm search repo metallb
-# Installeer metallb
-helm upgrade --install metallb metallb/metallb --create-namespace \
---namespace metallb-system --wait
-````
+## Installeer en configureer MetalLB
 
-- [ ] Voeg de configuratie toe
+1. **Voeg MetalLB repository toe aan Helm**:
+   ```sh
+   helm repo add metallb https://metallb.github.io/metallb
+   helm search repo metallb
+   ```
 
-````
-cat << 'EOF' | kubectl apply -f -
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
-metadata:
-  name: default-pool
-  namespace: metallb-system
-spec:
-  addresses:
-  - 192.168.56.200-192.168.56.250
----
-apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
-metadata:
-  name: default
-  namespace: metallb-system
-spec:
-  ipAddressPools:
-  - default-pool
-EOF
-````
+2. **Installeer MetalLB**:
+   ```sh
+   helm upgrade --install metallb metallb/metallb --create-namespace --namespace metallb-system --wait
+   ```
 
-- [ ] Bekijk de pods (binnen namespace metallb-system)
+3. **Voeg de configuratie toe**:
+   ```sh
+   cat << 'EOF' | kubectl apply -f -
+   apiVersion: metallb.io/v1beta1
+   kind: IPAddressPool
+   metadata:
+     name: default-pool
+     namespace: metallb-system
+   spec:
+     addresses:
+     - 192.168.56.200-192.168.56.250
+   ---
+   apiVersion: metallb.io/v1beta1
+   kind: L2Advertisement
+   metadata:
+     name: default
+     namespace: metallb-system
+   spec:
+     ipAddressPools:
+     - default-pool
+   EOF
+   ```
 
-````
-sudo kubectl get pods -n metallb-system
-````
-- [ ] Bekijk de services (binnen namespace metallb-system)
+4. **Bekijk de pods in MetalLB-system namespace**:
+   ```sh
+   sudo kubectl get pods -n metallb-system
+   ```
 
-````
-sudo kubectl get svc -n kube-system
-````
+5. **Bekijk de services in kube-system namespace**:
+   ```sh
+   sudo kubectl get svc -n kube-system
+   ```
 
-## Installeer configureer Argo-CD
+## Installeer en configureer Argo-CD
 
-````
-sudo su
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-````
+1. **Installeer Argo-CD**:
+   ```sh
+   sudo su
+   kubectl create namespace argocd
+   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+   ```
 
-- [ ] Bekijk de pods en wacht tot ze "Running" zijn
+2. **Bekijk de pods en wacht tot ze "Running" zijn**:
+   ```sh
+   kubectl get pods -n argocd
+   ```
 
-````
-kubectl get pods  -n argocd
-````
+3. **Bekijk de services**:
+   ```sh
+   kubectl get svc -n argocd
+   ```
 
-- [ ] Bekijk de services 
+4. **Patch Argo-CD met een extern IP-adres**:
+   ```sh
+   kubectl patch service argocd-server -n argocd --patch '{ "spec": { "type": "LoadBalancer", "loadBalancerIP": "192.168.56.208" } }'
+   ```
 
-````
-kubectl get svc -n argocd
-````
+5. **Open je browser en ga naar**: [https://192.168.56.208/login](https://192.168.56.208/login)
 
-- [ ] Patch Argo-cd met een extern ip adres
+6. **Haal je wachtwoord op via PowerShell**:
+   ```sh
+   kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+   ```
 
-````
-kubectl patch service argocd-server -n argocd --patch '{ "spec": { "type": "LoadBalancer", "loadBalancerIP": "192.168.56.208" } }'
-````
+7. **Login bij Argo-CD**:
+    - Gebruikersnaam: `admin`
+    - Wachtwoord: `<wachtwoord uit PowerShell>`
 
-- [ ] Open je browser en voer in https://192.168.56.208/login
-
-- [ ] Ga naar powershell en haal je wachtwoord op
-
-````
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-````
-
-- [ ] Ga naar de browser en login als username: admin wachtwoord:<wachtwoord uit powershell>
-
-- [ ] https://github.com/settings/tokens Maak een token aan en zet die in je wachtwoord
-
+8. **Maak een GitHub token aan en gebruik deze als wachtwoord**:  
+   [GitHub Token Aanmaken](https://github.com/settings/tokens)
