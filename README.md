@@ -20,6 +20,19 @@
 
 - [ ] Klik op Configure adaptor manually en zet ip= 192.168.56.1
 
+
+- [ ] Ga naar Master -> Settings -> Network
+- [ ] Controleer Adapter 1 = Bridged adapter
+- [ ] Stel in Adapter 2 = Hosts Only-Network
+- [ ] Stel in Adapter 2: Ga naar advanced, Promiscuous mode allow VMS
+
+
+- [ ] Ga naar Node -> Settings -> Network
+- [ ] Controleer Adapter 2 = Bridged adapter
+- [ ] Stel in Adapter 1 = Hosts Only-Network
+- [ ] Stel in Adapter 1: Ga naar advanced, Promiscuous mode allow VMS
+
+
 ## Install k3s
 
 - [ ] SSH naar master en install k3s met de volgende commando
@@ -57,7 +70,9 @@ sudo kubectl get nodes
 - [ ] Zet de k3s configuratie in de environments(zowel master als node)
 
 ````
-sudo echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
+sudo su
+echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
+exit
 ````
 
 ## Installeer Helm
@@ -72,7 +87,7 @@ sudo su
 echo "KUBECONFIG=$KUBECONFIG" >> /etc/environment
 exit
 #Switch naar home
-cd
+cd..
 #Maak een directory voor helm
 mkdir helm
 #Switch naar helm directory
