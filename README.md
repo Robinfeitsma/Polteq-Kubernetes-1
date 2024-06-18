@@ -1,79 +1,76 @@
 # Kubernetes 1
 
+## Setup VirtualBox
 
-## Setup virtualbox
+1. **Download en installeer VirtualBox 7.0.14**:  
+   [VirtualBox 7.0.14 Download](https://www.virtualbox.org/wiki/Download_Old_Builds_7_0)
 
-- [ ] Download en installeer virtualbox 7.0.14: 
-- https://www.virtualbox.org/wiki/Download_Old_Builds_7_0
+2. **Download Images (Master & Node 1)**:  
+   [Images Download Link](https://polteq-my.sharepoint.com/:f:/p/robin_feitsma/EjQOYpa70HhHghZp0bCaYXYB2ZjTEgU6yLdisHQMSVfrAQ?e=JZf5wu)
 
+3. **Start VirtualBox en importeer Images**:
+    - Ga naar `File` > `Import Appliance`
+    - Selecteer en importeer beide gedownloade images (gebruik standaard instellingen)
 
-- [ ] Download Images (Master & Node 1)
-- https://polteq-my.sharepoint.com/:f:/p/robin_feitsma/EjQOYpa70HhHghZp0bCaYXYB2ZjTEgU6yLdisHQMSVfrAQ?e=JZf5wu
+### Setup VirtualBox Network
 
-- [ ] Start virtualbox, Ga naar File en klik op import appliance
+4. **Configureer Netwerk**:
+    - Ga naar `File` > `Tools` > `Network Manager`
+    - Klik op `Host-only Networks` > `Create`
+    - Configureer adapter handmatig en zet IP op `192.168.56.1`
 
-- [ ] Selecteer en importeer beide gedownloaden images (gebruik standaard instellingen)
+### Setup VirtualBox Network voor Master
 
-- [ ] Ga naar File ->Tools -> en klik op Network manager
+5. **Configureer netwerk voor Master**:
+    - Ga naar `Master` > `Settings` > `Network`
+    - Controleer of `Adapter 1` is ingesteld op `Bridged Adapter`
+    - Stel `Adapter 2` in op `Host-only Network`
+    - Ga naar `Advanced` bij `Adapter 2` en zet `Promiscuous Mode` op `Allow VMs`
 
-- [ ] Klik op Host only Networks -> Create
+### Setup VirtualBox Network voor Node 1
 
-- [ ] Klik op Configure adaptor manually en zet ip= 192.168.56.1
-
-
-- [ ] Ga naar Master -> Settings -> Network
-- [ ] Controleer Adapter 1 = Bridged adapter
-- [ ] Stel in Adapter 2 = Hosts Only-Network
-- [ ] Stel in Adapter 2: Ga naar advanced, Promiscuous mode allow VMS
-
-
-- [ ] Ga naar Node -> Settings -> Network
-- [ ] Controleer Adapter 2 = Bridged adapter
-- [ ] Stel in Adapter 1 = Hosts Only-Network
-- [ ] Stel in Adapter 1: Ga naar advanced, Promiscuous mode allow VMS
-
+6. **Configureer netwerk voor Node 1**:
+    - Ga naar `Node` > `Settings` > `Network`
+    - Controleer of `Adapter 2` is ingesteld op `Bridged Adapter`
+    - Stel `Adapter 1` in op `Host-only Network`
+    - Ga naar `Advanced` bij `Adapter 1` en zet `Promiscuous Mode` op `Allow VMs`
 
 ## Install k3s
 
-- [ ] SSH naar master en install k3s met de volgende commando
+1. **SSH naar Master en installeer k3s**:
+   ```sh
+   curl -sfL https://get.k3s.io | sh -s - --node-taint CriticalAddonsOnly=true:NoExecute --disable-cloud-controller
+   
+2. **Haal de master token op**:
+   ```sh
+   sudo cat /var/lib/rancher/k3s/server/node-token
 
-````
-curl -sfL https://get.k3s.io | sh -s - --node-taint CriticalAddonsOnly=true:NoExecute  --disable-cloud-controller
-````
+3. **Kopieer de master token**:
+   -  Selecteer in powershell en klik rechts met muis
 
-- [ ] Haal de master token op 
+4. **SSH naar node 1**:
+   ```sh
+   ssh user@192.168.56.4
 
-````
-sudo cat /var/lib/rancher/k3s/server/node-token
-````
+5. **install k3s met de volgende commando**:
+   ```sh
+   curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.3:6443 K3S_TOKEN=<mynodetoken> sh -
 
-- [ ] Kopieer de master token (selecteer in powershell en klik rechts met muis)
+6. **Ga terug naar de master node met commando**:
+   ```sh
+   exit
 
-- [ ] SSH naar node 1 (ssh user@192.168.56.4) en install k3s met de volgende commando
+7. **Controleer of alle nodes zijn toegevoegd**:
+   ```sh
+   sudo kubectl get nodes
 
-````
-curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.3:6443 K3S_TOKEN=mynodetoken sh -
-````
+8. **Zet de k3s configuratie in de environments**:
+- Zowel master als node
 
-- [ ] Ga terug naar de master node 
-
-````
-exit
-````
-
-- [ ] Controleer of alle nodes zijn toegevoegd
-
-````
-sudo kubectl get nodes
-````
-
-- [ ] Zet de k3s configuratie in de environments(zowel master als node)
-
-````
-sudo su
-echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
-exit
-````
+   ```sh
+   sudo su
+   echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
+   exit
 
 ## Installeer Helm
 
