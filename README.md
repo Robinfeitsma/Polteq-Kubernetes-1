@@ -188,3 +188,16 @@
 
 8. **Maak een GitHub token aan en gebruik deze als wachtwoord**:  
    [GitHub Token Aanmaken](https://github.com/settings/tokens)
+
+## Koppel repository 
+
+1. **Ga naar Settings -> Repositories**
+2. **Klik op + Connect REPO**
+3. **Vul in**:
+   - Choose your connection method: VIA HTTPS
+   - Type: git
+   - Project: default
+   - Repository URL: https://github.com/Robinfeitsma/Polteq-Kubernetes-1
+   - Username: Test (of een andere string)
+   - Password: Je GitToken
+4. **Klik op connect**
