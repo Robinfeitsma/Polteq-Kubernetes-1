@@ -63,7 +63,10 @@
    ```sh
    sudo kubectl get nodes
    ```
-
+   **Als er problemen zijn kan je op de node dit commando gebruiken om de status van de k3s-agent te bekijken**:
+   ```sh
+   sudo systemctl status k3s-agent.service
+   ```
 6. **Zet de k3s configuratie in de environment (zowel Master als Node)**:
    ```sh
    sudo su
