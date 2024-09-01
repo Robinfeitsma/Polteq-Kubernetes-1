@@ -72,7 +72,10 @@
    ```sh
    sudo su
    echo "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
-   exit
+   ```
+7. **Reboot de Master node**:
+   ```sh
+   reboot
    ```
 
 ## Installeer Helm
