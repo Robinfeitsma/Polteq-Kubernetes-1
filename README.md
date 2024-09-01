@@ -84,11 +84,7 @@
    ```sh
    export KUBECONFIG=~/.kube/config
    mkdir ~/.kube 2> /dev/null
-   sudo k3s kubectl config view --raw > "$KUBECONFIG"
-   chmod 600 "$KUBECONFIG"
-   sudo su
-   echo "KUBECONFIG=$KUBECONFIG" >> /etc/environment
-   exit
+   k3s kubectl config view --raw > "$KUBECONFIG"
    ```
 
 2. **Installeer Helm**:
