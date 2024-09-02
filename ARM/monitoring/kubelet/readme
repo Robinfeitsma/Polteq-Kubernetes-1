@@ -1,0 +1,2 @@
+dha@n1:~/projects/pi4-monitoring/kubelet$ kubectl apply -f kubelet-servicemonitor.yaml
+servicemonitor.monitoring.coreos.com/kubelet created

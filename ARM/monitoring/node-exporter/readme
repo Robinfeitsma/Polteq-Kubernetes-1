@@ -1,0 +1,19 @@
+See https://github.com/prometheus/node_exporter for latest release
+
+$ cd ~/projects/pi4-monitoring
+$ kubectl apply -f node-exporter/
+clusterrolebinding.rbac.authorization.k8s.io/node-exporter created
+clusterrole.rbac.authorization.k8s.io/node-exporter created
+daemonset.apps/node-exporter created
+serviceaccount/node-exporter created
+servicemonitor.monitoring.coreos.com/node-exporter created
+service/node-exporter created
+
+$ kubectl get pods -n monitoring -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE   IP              NODE   NOMINATED NODE   READINESS GATES
+prometheus-operator-6d56dc87f4-tg5qh   1/1     Running   0          10m   10.42.2.197     n2     <none>           <none>
+node-exporter-flgs7                    2/2     Running   0          61s   192.168.0.204   n4     <none>           <none>
+node-exporter-r4wfz                    2/2     Running   0          61s   192.168.0.202   n2     <none>           <none>
+node-exporter-jblkk                    2/2     Running   0          61s   192.168.0.201   n1     <none>           <none>
+node-exporter-fhkw6                    2/2     Running   0          61s   192.168.0.203   n3     <none>           <none>
+node-exporter-jwt8k                    2/2     Running   0          61s   192.168.0.205   n5     <none>           <none>

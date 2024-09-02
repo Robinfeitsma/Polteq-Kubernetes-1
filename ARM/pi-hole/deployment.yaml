@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      initContainers:
+      - name: setup-pihole-config
+        image: busybox
+        command: ['sh', '-c', 'cp /tmp/pihole-FTL.conf /etc/pihole/pihole-FTL.conf']
+        volumeMounts:
+        - name: pihole-ftl-conf
+          mountPath: /tmp
+        - name: pihole-data
+          mountPath: /etc/pihole
+      containers:
+      - name: pihole
+        image: pihole/pihole:latest
+        volumeMounts:
+        - mountPath: /etc/pihole
+          name: pihole-data
+          subPath: etc-pihole
+        - mountPath: /etc/dnsmasq.d
+          name: pihole-data
+          subPath: etc-dnsmasq.d
+        - mountPath: /etc/pihole/pihole-FTL.conf
+          name: pihole-ftl-conf
+          subPath: pihole-FTL.conf
+        - name: custom-adlist
+          mountPath: /etc/pihole/adlists.list
+          subPath: adlists.list
+        - name: reglist
+          mountPath: /etc/pihole/regex.list
+          subPath: regex.list
+#        - name: custom-lan-list
+#          mountPath: /etc/pihole/lan.list
+#          subPath: lan.list
+#        - name: custom-02-lan
+#          mountPath: /etc/dnsmasq.d/02-lan.conf
+#          subPath: 02-lan.conf
+        ports:
+        - containerPort: 80
+        - containerPort: 53
+        - containerPort: 53
+          protocol: UDP
+      volumes:  # Correct placement of volumes
+      - name: pihole-data
+        persistentVolumeClaim:
+          claimName: pihole-data
+      - name: pihole-ftl-conf
+        configMap:
+          name: pihole-ftl-conf
+          items:
+          - key: pihole-FTL.conf
+            path: pihole-FTL.conf
+      - name: reglist
+        configMap:
+          name: pihole-env
+          items:
+          - key: reglist
+            path: regex.list
+      - name: custom-adlist
+        configMap:
+          name: pihole-env
+          items:
+          - key: adlist
+            path: adlists.list

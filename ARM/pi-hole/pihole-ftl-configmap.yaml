@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-ftl-conf
+  namespace: pihole
+data:
+  pihole-FTL.conf: |
+    # Add your custom FTL configurations here
+    PRIVACYLEVEL=0
+    MAXDBDAYS=365
+    DBINTERVAL=60.0

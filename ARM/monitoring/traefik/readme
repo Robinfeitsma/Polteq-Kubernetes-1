@@ -1,0 +1,2 @@
+$ kubectl apply -f traefik-servicemonitor.yaml
+servicemonitor.monitoring.coreos.com/traefik created

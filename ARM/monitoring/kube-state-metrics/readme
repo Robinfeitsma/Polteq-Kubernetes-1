@@ -1,0 +1,10 @@
+See https://github.com/kubernetes/kube-state-metrics for latest release
+
+$ cd /projects/pi4-monitoring
+$ kubectl apply -f kube-state-metrics/
+clusterrole.rbac.authorization.k8s.io/kube-state-metrics created
+clusterrolebinding.rbac.authorization.k8s.io/kube-state-metrics created
+deployment.apps/kube-state-metrics created
+service/kube-state-metrics created
+serviceaccount/kube-state-metrics created
+servicemonitor.monitoring.coreos.com/kube-state-metrics created
